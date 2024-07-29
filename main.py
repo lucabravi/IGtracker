@@ -1,4 +1,4 @@
-import sys
+import sys, os
 from ensta import Guest
 from utils import get_media_type
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
@@ -6,18 +6,26 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 import time
-import dotenv
+import logging
+from dotenv import load_dotenv
+
+logging.basicConfig(level=logging.DEBUG, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.FileHandler('app.log'),  # Logs to a file
+                              logging.StreamHandler()])        # Logs to the console
+logger = logging.getLogger(__name__)
 
 # region load .env data
-dotenv.load_dotenv()
-db_user = dotenv.get("DB_USER")
-db_password = dotenv.get("DB_PASSWORD")
-db_name = dotenv.get("DB_NAME")
-db_host = dotenv.get("DB_HOST")
-db_port = dotenv.get("DB_PORT")
+load_dotenv()
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_name = os.getenv("DB_NAME")
+db_host = os.getenv("DB_HOST")
+db_port = os.getenv("DB_PORT")
 # endregion load .env data
 
 # Configurazione database
+
 DATABASE_URL = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?charset=utf8mb4"
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
@@ -67,6 +75,7 @@ Base.metadata.create_all(engine)
 def update_data(account):
     guest = Guest()
     profile = guest.profile(account)
+    #logger.debug(profile)
 
     session = Session()
 
@@ -90,6 +99,7 @@ def update_data(account):
     # Creazione o aggiornamento dei dati dei post
     posts = guest.posts(account)
     for post in posts:
+        logger.debug(post)
         post_id = post.post_id
         db_post = session.query(Post).filter_by(post_id=post_id).first()
         if not db_post:
@@ -118,6 +128,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     for arg in args[1:]:
+        logger.info(f'Downloading {arg} data')
         update_data(arg)
 
     # update_data("ig_username_example")

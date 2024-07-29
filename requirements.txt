@@ -1,2 +1,5 @@
 wheel
 ensta
+python-dotenv
+pymysql
+sqlalchemy
