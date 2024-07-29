@@ -1,6 +1,6 @@
 import sys
 from ensta import Guest
-from .utils import get_media_type
+from utils import get_media_type
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
