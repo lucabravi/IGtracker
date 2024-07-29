@@ -72,17 +72,17 @@ Base.metadata.create_all(engine)
 
 
 # Funzione principale per aggiornare i dati
-def update_data(account):
+def update_data(username):
     guest = Guest()
-    profile = guest.profile(account)
+    profile = guest.profile(username)
     #logger.debug(profile)
 
     session = Session()
 
     # Creazione dei dati dell'account se non esiste
-    db_account = session.query(Account).filter_by(username=account).first()
+    db_account = session.query(Account).filter_by(username=username).first()
     if not db_account:
-        db_account = Account(username=account)
+        db_account = Account(username=username)
         session.add(db_account)
         session.commit()  # Necessario per generare l'id
 
@@ -95,9 +95,11 @@ def update_data(account):
         timestamp=datetime.utcnow()
     )
     session.add(account_history)
+    session.commit()
 
     # Creazione o aggiornamento dei dati dei post
-    posts = guest.posts(account)
+    posts = guest.posts(username)
+    # logger.debug(posts)
     for post in posts:
         logger.debug(post)
         post_id = post.post_id
@@ -111,7 +113,7 @@ def update_data(account):
         post_history = PostHistory(
             post_id=db_post.id,
             media_type=get_media_type(post.media_type),
-            posted_at=post.taken_at,
+            posted_at=datetime.fromtimestamp(post.taken_at),
             comment_count=post.comment_count,
             like_count=post.like_count,
             timestamp=datetime.utcnow()
