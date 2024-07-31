@@ -2,14 +2,14 @@ import sys, os
 from ensta import Guest
 from utils import get_media_type
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 import time
 import logging
 from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.DEBUG, 
+logging.basicConfig(level=logging.INFO, 
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler('app.log'),  # Logs to a file
                               logging.StreamHandler()])        # Logs to the console
